@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Absensi SIPETRA - SMAN 12 LUWU</title>
+
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #222;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a73e8, #263b91);
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .petunjuk {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    #hasilScan {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #eef5ff;
+      text-align: center;
+      font-size: 16px;
+      display: none;
+    }
+
+    .success {
+      color: #137333;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #c5221f;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 15px;
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>📷 Absensi SIPETRA</h1>
+    <p>SMAN 12 LUWU</p>
+  </div>
+
+  <div class="container">
+
+    <h2>Absensi Siswa</h2>
+
+    <div class="petunjuk">
+      Silakan scan QR Code pada kartu siswa.
+    </div>
+
+    <div id="reader"></div>
+
+    <div id="hasilScan"></div>
+
+  </div>
+
+  <script>
+
+    function onScanSuccess(decodedText, decodedResult) {
+
+      const hasil = document.getElementById("hasilScan");
+
+      hasil.style.display = "block";
+
+      hasil.innerHTML =
+        "<div class='success'>✅ QR berhasil dibaca</div>" +
+        "<br>" +
+        "<b>Student ID:</b> " + decodedText;
+
+      console.log("Student ID:", decodedText);
+
+    }
+
+    function onScanFailure(error) {
+      // Scanner tetap berjalan.
+    }
+
+    const scanner = new Html5QrcodeScanner(
+      "reader",
+      {
+        fps: 10,
+        qrbox: {
+          width: 250,
+          height: 250
+        }
+      },
+      false
+    );
+
+    scanner.render(
+      onScanSuccess,
+      onScanFailure
+    );
+
+  </script>
+
+</body>
+</html>
