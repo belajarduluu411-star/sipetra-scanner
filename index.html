@@ -118,20 +118,98 @@
 
   <script>
 
-    function onScanSuccess(decodedText, decodedResult) {
+   let sedangProsesAbsensi = false;
 
-      const hasil = document.getElementById("hasilScan");
+function onScanSuccess(decodedText, decodedResult) {
 
-      hasil.style.display = "block";
+  if (sedangProsesAbsensi) {
+    return;
+  }
+
+  sedangProsesAbsensi = true;
+
+  const hasil = document.getElementById("hasilScan");
+
+  hasil.style.display = "block";
+
+  hasil.innerHTML =
+    "<div class='success'>⏳ QR berhasil dibaca</div>" +
+    "<br>" +
+    "<b>Student ID:</b> " + decodedText +
+    "<br><br>" +
+    "⏳ Mengirim data absensi ke SIPETRA...";
+
+  const studentId = decodedText.trim();
+
+  const callbackName = "absensiCallback_" + Date.now();
+
+  window[callbackName] = function(data) {
+
+    if (data && data.success) {
 
       hasil.innerHTML =
-        "<div class='success'>✅ QR berhasil dibaca</div>" +
+        "<div class='success'>✅ ABSENSI BERHASIL</div>" +
         "<br>" +
-        "<b>Student ID:</b> " + decodedText;
+        "<b>Nama:</b> " + data.nama +
+        "<br>" +
+        "<b>Student ID:</b> " + data.studentId +
+        "<br>" +
+        "<b>Kelas:</b> " + data.kelas +
+        "<br>" +
+        "<b>Tanggal:</b> " + data.tanggal +
+        "<br>" +
+        "<b>Jam:</b> " + data.jam +
+        "<br>" +
+        "<b>Status:</b> " + data.status +
+        "<br>" +
+        "<b>Metode:</b> " + data.metode;
 
-      console.log("Student ID:", decodedText);
+    } else {
 
+      hasil.innerHTML =
+        "<div class='error'>❌ ABSENSI GAGAL</div>" +
+        "<br>" +
+        (data && data.message
+          ? data.message
+          : "Data absensi tidak dapat diproses.");
     }
+
+    sedangProsesAbsensi = false;
+
+    delete window[callbackName];
+
+    const scriptLama = document.getElementById(callbackName);
+
+    if (scriptLama) {
+      scriptLama.remove();
+    }
+  };
+
+  const script = document.createElement("script");
+
+  script.id = callbackName;
+
+  script.src =
+    "https://script.google.com/macros/s/AKfycbxYQsvxsEEwqfUe8e6LxGjnEB-CefWzqvYQX45Hz0MWNiF9Rb2eTftl6owepkcHd4d_Pg/exec" +
+    "?api=absensi" +
+    "&studentId=" + encodeURIComponent(studentId) +
+    "&callback=" + callbackName;
+
+  script.onerror = function() {
+
+    hasil.innerHTML =
+      "<div class='error'>❌ Gagal terhubung ke SIPETRA</div>" +
+      "<br>Silakan coba scan kembali.";
+
+    sedangProsesAbsensi = false;
+
+    delete window[callbackName];
+
+    script.remove();
+  };
+
+  document.body.appendChild(script);
+}
 
     function onScanFailure(error) {
       // Scanner tetap berjalan.
