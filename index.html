@@ -118,7 +118,21 @@
   </div>
 
   <script> 
+window.onerror = function(message, source, lineno, colno, error) {
+  const reader = document.getElementById("reader");
 
+  if (reader) {
+    reader.innerHTML =
+      "<div style='color:red;font-weight:bold;padding:15px;'>" +
+      "ERROR JAVASCRIPT:<br>" +
+      message +
+      "<br>Baris: " +
+      lineno +
+      "</div>";
+  }
+
+  return false;
+};
    let sedangProsesAbsensi = false;
 // Integrasi API Absensi SIPETRA
 function onScanSuccess(decodedText, decodedResult) {
