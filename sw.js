@@ -1,4 +1,4 @@
-const CACHE_NAME = "sipetra-v1";
+const CACHE_NAME = "sipetra-v2";
 
 const FILES_TO_CACHE = [
   "./",
@@ -11,6 +11,8 @@ self.addEventListener("install", event => {
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES_TO_CACHE))
   );
+
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -23,9 +25,17 @@ self.addEventListener("activate", event => {
       )
     )
   );
+
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
+
+  // Jangan ganggu koneksi ke server/API SIPETRA
+  if (new URL(event.request.url).origin !== self.location.origin) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
