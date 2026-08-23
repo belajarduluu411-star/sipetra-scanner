@@ -1,0 +1,11 @@
+{
+  "name": "SIPETRA ONE ID",
+  "short_name": "SIPETRA",
+  "description": "Absensi QR SIPETRA ONE ID - SMAN 12 LUWU",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#1a73e8",
+  "orientation": "portrait",
+  "icons": []
+}
