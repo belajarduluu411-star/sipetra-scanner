@@ -271,5 +271,21 @@ script.src =
       .catch(error => console.error("Service Worker gagal:", error));
   }
 </script>
+  <script>
+function updateStatusKoneksi() {
+  const status = document.getElementById("statusKoneksi");
+
+  if (navigator.onLine) {
+    status.innerHTML = "🟢 Online — terhubung ke SIPETRA";
+  } else {
+    status.innerHTML = "🟠 Offline — data tersimpan di perangkat";
+  }
+}
+
+window.addEventListener("online", updateStatusKoneksi);
+window.addEventListener("offline", updateStatusKoneksi);
+
+updateStatusKoneksi();
+</script>
 </body>
 </html>
