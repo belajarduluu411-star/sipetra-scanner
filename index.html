@@ -180,23 +180,47 @@ function onScanSuccess(decodedText, decodedResult) {
 
     if (data && data.success) {
 
-      hasil.innerHTML =
-        "<div class='success'>✅ ABSENSI BERHASIL</div>" +
-        "<br>" +
-        "<b>Nama:</b> " + data.nama +
-        "<br>" +
-        "<b>Student ID:</b> " + data.studentId +
-        "<br>" +
-        "<b>Kelas:</b> " + data.kelas +
-        "<br>" +
-        "<b>Tanggal:</b> " + data.tanggal +
-        "<br>" +
-        "<b>Jam:</b> " + data.jam +
-        "<br>" +
-        "<b>Status:</b> " + data.status +
-        "<br>" +
-        "<b>Metode:</b> " + data.metode;
-    } else {
+      const pesanWA =
+  "ABSENSI SIPETRA%0A%0A" +
+  "Nama: " + encodeURIComponent(data.nama) + "%0A" +
+  "Student ID: " + encodeURIComponent(data.studentId) + "%0A" +
+  "Kelas: " + encodeURIComponent(data.kelas) + "%0A" +
+  "Tanggal: " + encodeURIComponent(data.tanggal) + "%0A" +
+  "Jam: " + encodeURIComponent(data.jam) + "%0A" +
+  "Status: " + encodeURIComponent(data.status) + "%0A" +
+  "Metode: " + encodeURIComponent(data.metode);
+
+const tombolOrtu = data.noWhatsAppOrtu
+  ? "<br><a href='https://wa.me/" + data.noWhatsAppOrtu +
+    "?text=" + pesanWA +
+    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>📱 WhatsApp Orang Tua</a>"
+  : "";
+
+const tombolWali = data.noWhatsAppWali
+  ? "<br><a href='https://wa.me/" + data.noWhatsAppWali +
+    "?text=" + pesanWA +
+    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>👨‍🏫 WhatsApp Wali Kelas</a>"
+  : "";
+
+hasil.innerHTML =
+  "<div class='success'>✅ ABSENSI BERHASIL</div>" +
+  "<br>" +
+  "<b>Nama:</b> " + data.nama +
+  "<br>" +
+  "<b>Student ID:</b> " + data.studentId +
+  "<br>" +
+  "<b>Kelas:</b> " + data.kelas +
+  "<br>" +
+  "<b>Tanggal:</b> " + data.tanggal +
+  "<br>" +
+  "<b>Jam:</b> " + data.jam +
+  "<br>" +
+  "<b>Status:</b> " + data.status +
+  "<br>" +
+  "<b>Metode:</b> " + data.metode +
+  "<br><br>" +
+  tombolOrtu +
+  tombolWali;    } else {
 
       hasil.innerHTML =
         "<div class='error'>❌ ABSENSI GAGAL</div>" +
