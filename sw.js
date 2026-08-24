@@ -3,6 +3,7 @@ const CACHE_NAME = "sipetra-v3";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
+  "./html5-qrcode.min.js",
   "./manifest.json"
 ];
 
