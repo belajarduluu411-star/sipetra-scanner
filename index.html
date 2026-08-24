@@ -228,16 +228,31 @@ script.src =
 
   script.onerror = function() {
 
+  try {
+    simpanAbsensiOffline(studentId);
+
     hasil.innerHTML =
-      "<div class='error'>❌ Gagal terhubung ke SIPETRA</div>" +
-      "<br>Silakan coba scan kembali.";
+      "<div class='success'>📴 ABSENSI TERSIMPAN OFFLINE</div>" +
+      "<br>" +
+      "<b>Student ID:</b> " + studentId +
+      "<br>" +
+      "Data akan dikirim ke SIPETRA saat internet tersedia.";
 
-    sedangProsesAbsensi = false;
+  } catch (error) {
 
-    delete window[callbackName];
+    hasil.innerHTML =
+      "<div class='error'>❌ ABSENSI GAGAL</div>" +
+      "<br>" +
+      "Data offline tidak dapat disimpan.";
 
-    script.remove();
-  };
+  }
+
+  sedangProsesAbsensi = false;
+
+  delete window[callbackName];
+
+  script.remove();
+};
 
   document.body.appendChild(script);
 }
