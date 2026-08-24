@@ -134,6 +134,21 @@ window.onerror = function(message, source, lineno, colno, error) {
 };
    let sedangProsesAbsensi = false;
 // Integrasi API Absensi SIPETRA
+    function simpanAbsensiOffline(studentId) {
+  const antrean = JSON.parse(
+    localStorage.getItem("sipetraAbsensiOffline") || "[]"
+  );
+
+  antrean.push({
+    studentId: studentId,
+    waktuScan: new Date().toISOString()
+  });
+
+  localStorage.setItem(
+    "sipetraAbsensiOffline",
+    JSON.stringify(antrean)
+  );
+}
 function onScanSuccess(decodedText, decodedResult) {
 
   if (sedangProsesAbsensi) {
