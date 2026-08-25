@@ -201,7 +201,21 @@ const tombolWali = data.noWhatsAppWali
     "?text=" + pesanWA +
     "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>👨‍🏫 WhatsApp Wali Kelas</a>"
   : "";
+const tombolBK1 =
+  data.status === "Terlambat" && data.noWhatsAppBK1
+  ? "<br><a href='https://wa.me/" + data.noWhatsAppBK1 +
+    "?text=" + pesanWA +
+    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 1</a>"
+  : "";
 
+const tombolBK2 =
+  data.status === "Terlambat" && data.noWhatsAppBK2
+  ? "<br><a href='https://wa.me/" + data.noWhatsAppBK2 +
+    "?text=" + pesanWA +
+    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 2</a>"
+  : "";
+
+const tombolBK = tombolBK1 + tombolBK2;
 hasil.innerHTML =
   "<div class='success'>✅ ABSENSI BERHASIL</div>" +
   "<br>" +
