@@ -1,4 +1,4 @@
-const CACHE_NAME = "sipetra-v4";
+const CACHE_NAME = "sipetra-v3";
 
 const FILES_TO_CACHE = [
   "./",
