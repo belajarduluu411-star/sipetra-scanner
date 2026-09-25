@@ -216,6 +216,17 @@ const tombolBK2 =
   : "";
 
 const tombolBK = tombolBK1 + tombolBK2;
+
+      const sessionId = new URLSearchParams(window.location.search).get("sessionId");
+
+const tombolPelanggaran = sessionId
+  ? "<br><a href='https://script.google.com/macros/s/AKfycbxYQsvxsEEwqfUe8e6LxGjnEB-CefWzqYQX45Hz0MWNiF9Rb2eTftl6owepkcHd4d_Pg/exec?page=pelanggaran&sessionId=" +
+    encodeURIComponent(sessionId) +
+    "&studentId=" +
+    encodeURIComponent(data.studentId) +
+    "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
+  : "";
+      
 hasil.innerHTML =
   "<div class='success'>✅ ABSENSI BERHASIL</div>" +
   "<br>" +
@@ -235,7 +246,8 @@ hasil.innerHTML =
  "<br><br>" +
 tombolOrtu +
 tombolWali +
-tombolBK;    } else {
+tombolBK + 
+  tombolPelanggaran;    } else {
 
       hasil.innerHTML =
         "<div class='error'>❌ ABSENSI GAGAL</div>" +
