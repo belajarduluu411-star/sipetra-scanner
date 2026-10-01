@@ -292,11 +292,14 @@ script.src =
 
   } catch (error) {
 
-    hasil.innerHTML =
-      "<div class='error'>❌ ABSENSI GAGAL</div>" +
-      "<br>" +
-      "Data offline tidak dapat disimpan.";
-
+   hasil.innerHTML =
+  "<div class='error'>❌ ABSENSI GAGAL</div>" +
+  "<br>" +
+  (data && data.message
+    ? data.message
+    : "Data absensi tidak dapat diproses.") +
+  "<br><br>" +
+  tombolPelanggaran;
   }
 
   sedangProsesAbsensi = false;
