@@ -249,13 +249,14 @@ tombolWali +
 tombolBK + 
   tombolPelanggaran;    } else {
 
-      hasil.innerHTML =
-        "<div class='error'>❌ ABSENSI GAGAL</div>" +
-        "<br>" +
-        (data && data.message
-          ? data.message
-          : "Data absensi tidak dapat diproses.");
-    }
+    hasil.innerHTML =
+  "<div class='error'>❌ ABSENSI GAGAL</div>" +
+  "<br>" +
+  (data && data.message
+    ? data.message
+    : "Data absensi tidak dapat diproses.") +
+  "<br><br>" +
+  tombolPelanggaran;
     sedangProsesAbsensi = false;
 
     delete window[callbackName];
