@@ -178,18 +178,6 @@ function onScanSuccess(decodedText, decodedResult) {
 
   window[callbackName] = function(data) {
 
- const sessionId =
-    new URLSearchParams(window.location.search).get("sessionId");
-
-  const tombolPelanggaran = sessionId
-    ? "<br><a href='https://script.google.com/macros/s/AKfycbz7qHSQWkjFu0CvSX6x8uPkVsyBCwDP_1Ny7aPVdWFY/dev?page=pelanggaran&sessionId=" +
-      encodeURIComponent(sessionId) +
-      "&studentId=" +
-      encodeURIComponent(data.studentId) +
-      "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
-    : "";
-
-    
     if (data && data.success) {
 
       const pesanWA =
@@ -229,6 +217,16 @@ const tombolBK2 =
 
 const tombolBK = tombolBK1 + tombolBK2;
 
+      const sessionId = new URLSearchParams(window.location.search).get("sessionId");
+
+const tombolPelanggaran = sessionId
+  ? "<br><a href='https://script.google.com/macros/s/AKfycbz7qHSQWkjFu0CvSX6x8uPkVsyBCwDP_1Ny7aPVdWFY/dev?page=pelanggaran&sessionId=" +
+    encodeURIComponent(sessionId) +
+    "&studentId=" +
+    encodeURIComponent(data.studentId) +
+    "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
+  : "";
+      
 hasil.innerHTML =
   "<div class='success'>✅ ABSENSI BERHASIL</div>" +
   "<br>" +
@@ -329,10 +327,12 @@ script.src =
       },
       false
     );
+
     scanner.render(
       onScanSuccess,
       onScanFailure
     );
+
   </script>
 <script>
   if ("serviceWorker" in navigator) {
