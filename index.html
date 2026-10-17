@@ -222,9 +222,10 @@
       const script = document.createElement("script");
       script.id = callbackName;
       script.async = true;
-      script.src =
-        "https://google.com" +
+      script.src = 
+       "https://script.google.com/macros/s/AKfycbxYQsvxsEEwqfUe8e6LxGjnEB-CefWzqvYQX45Hz0MWNiF9Rb2eTftl6owepkcHd4d_Pg/exec" +
         "?api=absensi&studentId=" + encodeURIComponent(studentId) + "&callback=" + callbackName;
+
 
       script.onerror = function() {
         try {
