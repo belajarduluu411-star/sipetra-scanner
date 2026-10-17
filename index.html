@@ -121,199 +121,164 @@
   </div>
 
   <script> 
-window.onerror = function(message, source, lineno, colno, error) {
-  const reader = document.getElementById("reader");
+    window.onerror = function(message, source, lineno, colno, error) {
+      const reader = document.getElementById("reader");
+      if (reader) {
+        reader.innerHTML =
+          "<div style='color:red;font-weight:bold;padding:15px;'>" +
+          "ERROR JAVASCRIPT:<br>" +
+          message +
+          "<br>Baris: " +
+          lineno +
+          "</div>";
+      }
+      return false;
+    };
 
-  if (reader) {
-    reader.innerHTML =
-      "<div style='color:red;font-weight:bold;padding:15px;'>" +
-      "ERROR JAVASCRIPT:<br>" +
-      message +
-      "<br>Baris: " +
-      lineno +
-      "</div>";
-  }
+    let sedangProsesAbsensi = false;
 
-  return false;
-};
-   let sedangProsesAbsensi = false;
-// Integrasi API Absensi SIPETRA
+    // Integrasi API Absensi SIPETRA
     function simpanAbsensiOffline(studentId) {
-  const antrean = JSON.parse(
-    localStorage.getItem("sipetraAbsensiOffline") || "[]"
-  );
+      const antrean = JSON.parse(localStorage.getItem("sipetraAbsensiOffline") || "[]");
+      antrean.push({
+        studentId: studentId,
+        waktuScan: new Date().toISOString()
+      });
+      localStorage.setItem("sipetraAbsensiOffline", JSON.stringify(antrean));
+    }
 
-  antrean.push({
-    studentId: studentId,
-    waktuScan: new Date().toISOString()
-  });
+    function onScanSuccess(decodedText, decodedResult) {
+      if (sedangProsesAbsensi) {
+        return;
+      }
+      sedangProsesAbsensi = true;
 
-  localStorage.setItem(
-    "sipetraAbsensiOffline",
-    JSON.stringify(antrean)
-  );
-}
-function onScanSuccess(decodedText, decodedResult) {
+      const hasil = document.getElementById("hasilScan");
+      hasil.style.display = "block";
+      hasil.innerHTML =
+        "<div class='success'>⏳ QR berhasil dibaca</div>" +
+        "<br>" +
+        "<b>Student ID:</b> " + decodedText +
+        "<br><br>" +
+        "⏳ Mengirim data absensi ke SIPETRA...";
 
-  if (sedangProsesAbsensi) {
-    return;
-  }
-
-  sedangProsesAbsensi = true;
-
-  const hasil = document.getElementById("hasilScan");
-
-  hasil.style.display = "block";
-
-  hasil.innerHTML =
-    "<div class='success'>⏳ QR berhasil dibaca</div>" +
-    "<br>" +
-    "<b>Student ID:</b> " + decodedText +
-    "<br><br>" +
-    "⏳ Mengirim data absensi ke SIPETRA...";
-
-  const studentId = decodedText.trim();
-
-  const callbackName = "absensiCallback_" + Date.now();
-
-  window[callbackName] = function(data) {
-
-    if (data && data.success) {
-
-      const pesanWA =
-  "ABSENSI SIPETRA%0A%0A" +
-  "Nama: " + encodeURIComponent(data.nama) + "%0A" +
-  "Student ID: " + encodeURIComponent(data.studentId) + "%0A" +
-  "Kelas: " + encodeURIComponent(data.kelas) + "%0A" +
-  "Tanggal: " + encodeURIComponent(data.tanggal) + "%0A" +
-  "Jam: " + encodeURIComponent(data.jam) + "%0A" +
-  "Status: " + encodeURIComponent(data.status) + "%0A" +
-  "Metode: " + encodeURIComponent(data.metode);
-
-const tombolOrtu = data.noWhatsAppOrtu
-  ? "<br><a href='https://wa.me/" + data.noWhatsAppOrtu +
-    "?text=" + pesanWA +
-    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>📱 WhatsApp Orang Tua</a>"
-  : "";
-
-const tombolWali = data.noWhatsAppWali
-  ? "<br><a href='https://wa.me/" + data.noWhatsAppWali +
-    "?text=" + pesanWA +
-    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>👨‍🏫 WhatsApp Wali Kelas</a>"
-  : "";
-const tombolBK1 =
-  data.status === "Terlambat" && data.noWhatsAppBK1
-  ? "<br><a href='https://wa.me/" + data.noWhatsAppBK1 +
-    "?text=" + pesanWA +
-    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 1</a>"
-  : "";
-
-const tombolBK2 =
-  data.status === "Terlambat" && data.noWhatsAppBK2
-  ? "<br><a href='https://wa.me/" + data.noWhatsAppBK2 +
-    "?text=" + pesanWA +
-    "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 2</a>"
-  : "";
-
-const tombolBK = tombolBK1 + tombolBK2;
+      const studentId = decodedText.trim();
+      const callbackName = "absensiCallback_" + Date.now();
 
       const sessionId = new URLSearchParams(window.location.search).get("sessionId");
+      let tombolPelanggaran = "";
 
-const tombolPelanggaran = sessionId
-  ? "<br><a href='https://script.google.com/macros/s/AKfycbz7qHSQWkjFu0CvSX6x8uPkVsyBCwDP_1Ny7aPVdWFY/dev?page=pelanggaran&sessionId=" +
-    encodeURIComponent(sessionId) +
-    "&studentId=" +
-    encodeURIComponent(data.studentId) +
-    "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
-  : "";
-      
-hasil.innerHTML =
-  "<div class='success'>✅ ABSENSI BERHASIL</div>" +
-  "<br>" +
-  "<b>Nama:</b> " + data.nama +
-  "<br>" +
-  "<b>Student ID:</b> " + data.studentId +
-  "<br>" +
-  "<b>Kelas:</b> " + data.kelas +
-  "<br>" +
-  "<b>Tanggal:</b> " + data.tanggal +
-  "<br>" +
-  "<b>Jam:</b> " + data.jam +
-  "<br>" +
-  "<b>Status:</b> " + data.status +
-  "<br>" +
-  "<b>Metode:</b> " + data.metode +
- "<br><br>" +
-tombolOrtu +
-tombolWali +
-tombolBK + 
-  tombolPelanggaran;    } else {
+      window[callbackName] = function(data) {
+        if (data && data.success) {
+          const pesanWA =
+            "ABSENSI SIPETRA%0A%0A" +
+            "Nama: " + encodeURIComponent(data.nama) + "%0A" +
+            "Student ID: " + encodeURIComponent(data.studentId) + "%0A" +
+            "Kelas: " + encodeURIComponent(data.kelas) + "%0A" +
+            "Tanggal: " + encodeURIComponent(data.tanggal) + "%0A" +
+            "Jam: " + encodeURIComponent(data.jam) + "%0A" +
+            "Status: " + encodeURIComponent(data.status) + "%0A" +
+            "Metode: " + encodeURIComponent(data.metode);
 
-    hasil.innerHTML =
-  "<div class='error'>❌ ABSENSI GAGAL</div>" +
-  "<br>" +
-  (data && data.message
-    ? data.message
-    : "Data absensi tidak dapat diproses.") +
-  "<br><br>" +
-  tombolPelanggaran;
-    sedangProsesAbsensi = false;
+          const tombolOrtu = data.noWhatsAppOrtu
+            ? "<br><a href='https://wa.me" + data.noWhatsAppOrtu + "?text=" + pesanWA + "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>📱 WhatsApp Orang Tua</a>"
+            : "";
 
-    delete window[callbackName];
+          const tombolWali = data.noWhatsAppWali
+            ? "<br><a href='https://wa.me" + data.noWhatsAppWali + "?text=" + pesanWA + "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:8px;'>👨‍🏫 WhatsApp Wali Kelas</a>"
+            : "";
 
-    const scriptLama = document.getElementById(callbackName);
+          const tombolBK1 = (data.status === "Terlambat" && data.noWhatsAppBK1)
+            ? "<br><a href='https://wa.me" + data.noWhatsAppBK1 + "?text=" + pesanWA + "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 1</a>"
+            : "";
 
-    if (scriptLama) {
-      scriptLama.remove();
+          const tombolBK2 = (data.status === "Terlambat" && data.noWhatsAppBK2)
+            ? "<br><a href='https://wa.me" + data.noWhatsAppBK2 + "?text=" + pesanWA + "' target='_blank' style='display:inline-block;margin:5px;padding:10px 15px;background:#25D366;color:white;text-decoration:none;border-radius:5px;'>👨‍💼 WhatsApp Guru BK 2</a>"
+            : "";
+
+          const tombolBK = tombolBK1 + tombolBK2;
+
+          tombolPelanggaran = sessionId
+            ? "<br><a href='https://google.com" + encodeURIComponent(sessionId) + "&studentId=" + encodeURIComponent(data.studentId) + "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
+            : "";
+          
+          hasil.innerHTML =
+            "<div class='success'>✅ ABSENSI BERHASIL</div>" +
+            "<br>" +
+            "<b>Nama:</b> " + data.nama +
+            "<br>" +
+            "<b>Student ID:</b> " + data.studentId +
+            "<br>" +
+            "<b>Kelas:</b> " + data.kelas +
+            "<br>" +
+            "<b>Tanggal:</b> " + data.tanggal +
+            "<br>" +
+            "<b>Jam:</b> " + data.jam +
+            "<br>" +
+            "<b>Status:</b> " + data.status +
+            "<br>" +
+            "<b>Metode:</b> " + data.metode +
+            "<br><br>" +
+            tombolOrtu +
+            tombolWali +
+            tombolBK + 
+            tombolPelanggaran;
+        } else {
+          tombolPelanggaran = sessionId
+            ? "<br><a href='https://google.com" + encodeURIComponent(sessionId) + "&studentId=" + encodeURIComponent(studentId) + "' style='display:inline-block;margin:5px;padding:10px 15px;background:#dc3545;color:white;text-decoration:none;border-radius:8px;font-weight:bold;'>⚠️ CATAT PELANGGARAN</a>"
+            : "";
+
+          hasil.innerHTML =
+            "<div class='error'>❌ ABSENSI GAGAL</div>" +
+            "<br>" +
+            (data && data.message ? data.message : "Data absensi tidak dapat diproses.") +
+            "<br><br>" +
+            tombolPelanggaran;
+        }
+
+        sedangProsesAbsensi = false;
+        delete window[callbackName];
+        const scriptLama = document.getElementById(callbackName);
+        if (scriptLama) {
+          scriptLama.remove();
+        }
+      };
+
+      const script = document.createElement("script");
+      script.id = callbackName;
+      script.async = true;
+      script.src =
+        "https://google.com" +
+        "?api=absensi" +
+        "&studentId=" + encodeURIComponent(studentId) +
+        "&callback=" + callbackName;
+
+      script.onerror = function() {
+        try {
+          simpanAbsensiOffline(studentId);
+          hasil.innerHTML =
+            "<div class='success'>📴 ABSENSI TERSIMPAN OFFLINE</div>" +
+            "<br>" +
+            "<b>Student ID:</b> " + studentId +
+            "<br>" +
+            "Data akan dikirim ke SIPETRA saat internet tersedia.";
+        } catch (error) {
+          hasil.innerHTML =
+            "<div class='error'>❌ ABSENSI GAGAL (OFFLINE ERROR)</div>" +
+            "<br><br>" +
+            tombolPelanggaran;
+        }
+
+        sedangProsesAbsensi = false;
+        delete window[callbackName];
+        script.remove();
+      };
+
+      document.body.appendChild(script);
     }
-  };
-
-  const script = document.createElement("script");
-
-  script.id = callbackName;
-  script.async = true;
-script.src =
-  "https://script.google.com/macros/s/AKfycbxYQsvxsEEwqfUe8e6LxGjnEB-CefWzqvYQX45Hz0MWNiF9Rb2eTftl6owepkcHd4d_Pg/exec" +
-  "?api=absensi" +
-  "&studentId=" + encodeURIComponent(studentId) +
-  "&callback=" + callbackName;
-
-  script.onerror = function() {
-
-  try {
-    simpanAbsensiOffline(studentId);
-
-    hasil.innerHTML =
-      "<div class='success'>📴 ABSENSI TERSIMPAN OFFLINE</div>" +
-      "<br>" +
-      "<b>Student ID:</b> " + studentId +
-      "<br>" +
-      "Data akan dikirim ke SIPETRA saat internet tersedia.";
-
-  } catch (error) {
-
-   hasil.innerHTML =
-  "<div class='error'>❌ ABSENSI GAGAL</div>" +
-  "<br>" +
-  (data && data.message
-    ? data.message
-    : "Data absensi tidak dapat diproses.") +
-  "<br><br>" +
-  tombolPelanggaran;
-  }
-
-  sedangProsesAbsensi = false;
-
-  delete window[callbackName];
-
-  script.remove();
-};
-
-  document.body.appendChild(script);
-}
 
     function onScanFailure(error) {
-      // Scanner tetap berjalan.
+      // Scanner tetap berjalan mencari QR.
     }
 
     const scanner = new Html5QrcodeScanner(
@@ -332,8 +297,8 @@ script.src =
       onScanSuccess,
       onScanFailure
     );
-
   </script>
+
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js")
